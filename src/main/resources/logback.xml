@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Maxcode B.V.
+  -->
+
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} %-5level %logger{36} - SID: %X{sessionId} - %msg%n
+            </Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.base}/logs/service/simplerinvoicing.log</file>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - SID: %X{sessionId} - %msg%n</Pattern>
+        </layout>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>file.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <append>true</append>
+    </appender>
+
+    <logger name="org.springframework" level="ERROR"/>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

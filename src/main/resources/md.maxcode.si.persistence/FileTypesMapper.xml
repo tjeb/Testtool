@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Maxcode B.V.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="md.maxcode.si.persistence.FileTypesMapper">
+
+    <!--<cache/>-->
+
+    <update id="updateType" parameterType="md.maxcode.si.domain.FileType">
+        UPDATE "fileTypes"
+
+        SET
+        "name" = #{name},
+        "identifier" = #{identifier}
+
+        WHERE "id" = #{id}
+    </update>
+
+    <insert id="insertType" parameterType="string"
+            useGeneratedKeys="true"
+            keyProperty="id" keyColumn="id">
+        INSERT INTO "fileTypes"
+        ("name", "identifier")
+        VALUES
+        (#{name}, #{identifier})
+    </insert>
+
+    <delete id="deleteType">
+        DELETE FROM "fileTypes"
+        WHERE "id" = #{id}
+    </delete>
+
+    <resultMap id="FileTypeMap" type="md.maxcode.si.domain.FileType">
+        <id property="id" column="fileType_id"/>
+        <result property="name" column="fileType_name"/>
+        <result property="addedTime" column="fileType_addedTime"/>
+        <result property="identifier" column="fileType_identifier"/>
+        <collection property="attachedFiles"
+                    column="attachments"
+                    ofType="md.maxcode.si.domain.UserFile"
+                    javaType="java.util.ArrayList" resultMap="SchemaFileMap"/>
+    </resultMap>
+
+    <resultMap id="SchemaFileMap" type="md.maxcode.si.domain.SchemaFile">
+        <id property="id" column="file_id"/>
+        <result property="addedTime" column="file_addedTime"/>
+        <result property="name" column="file_name"/>
+        <result property="fileName" column="fileName"/>
+        <result property="userId" column="userId"/>
+        <result property="typeId" column="typeId"/>
+        <result property="extension" column="extension"/>
+        <result property="marked" column="marked"/>
+    </resultMap>
+
+    <select id="getAllWithTheirAttachments" resultMap="FileTypeMap">
+        SELECT
+        "fileTypes"."id" as fileType_id ,
+        "fileTypes"."name" as fileType_name,
+        "fileTypes"."addedTime" as fileType_addedTime,
+        "fileTypes"."identifier" as fileType_identifier,
+
+        "schemaFiles"."id" as file_id,
+        "schemaFiles"."name" as file_name,
+        "schemaFiles"."addedTime" as file_addedTime,
+        "fileName", "userId", "typeId", "extension", "marked"
+        FROM "fileTypes"
+
+        LEFT OUTER JOIN "schemaFiles"
+        ON "schemaFiles"."typeId" = "fileTypes"."id"
+
+        ORDER BY "fileTypes"."id" ASC
+    </select>
+
+    <select id="getByIdWithAttachments" resultMap="FileTypeMap"
+            parameterType="long">
+        SELECT
+        "fileTypes"."id" as fileType_id ,
+        "fileTypes"."name" as fileType_name,
+        "fileTypes"."addedTime" as fileType_addedTime,
+        "fileTypes"."identifier" as fileType_identifier,
+
+        "schemaFiles"."id" as file_id,
+        "schemaFiles"."name" as file_name,
+        "schemaFiles"."addedTime" as file_addedTime,
+        "fileName", "userId", "typeId", "extension", "marked"
+
+        FROM "fileTypes"
+
+        LEFT OUTER JOIN "schemaFiles"
+        ON "schemaFiles"."typeId" = "fileTypes"."id"
+
+        WHERE "fileTypes"."id" = #{id}
+    </select>
+
+</mapper>

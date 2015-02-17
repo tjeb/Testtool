@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Maxcode B.V.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="md.maxcode.si.persistence.UserFileMapper">
+
+    <cache/>
+
+    <insert id="insertFile" parameterType="md.maxcode.si.domain.UserFile"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO "userFiles"
+
+        ("name",
+        "fileName",
+        "size",
+        "userId",
+        "typeId",
+        "extension",
+        "validated",
+        "receivedMetadataId",
+        "validationInfo")
+
+        VALUES
+
+        (#{name},
+        #{fileName},
+        #{size},
+        #{userId},
+        #{typeId},
+        #{extension},
+        #{validated},
+        #{receivedMetadataId},
+        #{validationInfo})
+    </insert>
+
+    <update id="updateFile" parameterType="md.maxcode.si.domain.UserFile">
+        UPDATE "userFiles"
+        SET
+        "typeId" = #{typeId}
+        WHERE "id" = #{id}
+    </update>
+
+    <delete id="deleteFile">
+        DELETE FROM "userFiles"
+        WHERE "id" = #{id}
+    </delete>
+
+    <delete id="deleteFiles" parameterType="arraylist">
+        DELETE FROM "userFiles"
+        <where>
+            "id" IN
+            <foreach collection="list" item="id" index="index"
+                     open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
+
+
+    <resultMap id="FileTypeMap" type="md.maxcode.si.domain.FileType">
+        <id property="id" column="fileType_id"/>
+        <result property="name" column="fileType_name"/>
+        <result property="addedTime" column="fileType_addedTime"/>
+        <result property="identifier" column="fileType_identifier"/>
+        <collection property="attachedFiles"
+                    column="attachments"
+                    ofType="md.maxcode.si.domain.UserFile"
+                    javaType="java.util.ArrayList" resultMap="SchemaFileMap"/>
+    </resultMap>
+
+    <resultMap id="SchemaFileMap" type="md.maxcode.si.domain.SchemaFile">
+        <id property="id" column="file_id"/>
+        <result property="addedTime" column="file_addedTime"/>
+        <result property="name" column="file_name"/>
+        <result property="fileName" column="fileName"/>
+        <result property="userId" column="userId"/>
+        <result property="typeId" column="typeId"/>
+        <result property="extension" column="extension"/>
+        <result property="marked" column="marked"/>
+    </resultMap>
+
+    <select id="getAllWithTheirAttachments" resultMap="FileTypeMap">
+        SELECT
+        "fileTypes"."id" as fileType_id ,
+        "fileTypes"."name" as fileType_name,
+        "fileTypes"."addedTime" as fileType_addedTime,
+        "fileTypes"."identifier" as fileType_identifier,
+
+        "schemaFiles"."id" as file_id,
+        "schemaFiles"."name" as file_name,
+        "schemaFiles"."addedTime" as file_addedTime,
+        "fileName", "userId", "typeId", "extension", "marked"
+        FROM "fileTypes"
+
+        LEFT OUTER JOIN "schemaFiles"
+        ON "schemaFiles"."typeId" = "fileTypes"."id"
+
+        ORDER BY "fileTypes"."id" ASC
+    </select>
+
+
+</mapper>

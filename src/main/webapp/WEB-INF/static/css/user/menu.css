@@ -1,0 +1,41 @@
+/*
+ * Copyright (c) 2015 Maxcode B.V.
+ */
+
+.popover
+{
+    /*left: 980px;*/
+    max-width: 300px;
+    min-width: 300px;
+    /*position: fixed;*/
+}
+
+.popover.bottom.disabled
+{
+    opacity: 0.7;
+    pointer-events:none;
+}
+
+.popover.bottom
+{
+    top: inherit;
+    border-color: #2c3e50;
+    border-width: 5px;
+}
+
+.popover.bottom .arrow
+{
+    right: 3px;
+    left: auto;
+    color: #2c3e50;
+    border: none;
+}
+
+.popover.bottom .arrow {
+    /*top: 0px;*/
+    left: 20%;
+    /*margin-left: -5px;*/
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-bottom: 9px solid #000000;
+}

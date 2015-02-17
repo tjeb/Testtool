@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Maxcode B.V.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="md.maxcode.si.persistence.UserMapper">
+
+    <delete id="deleteUser" flushCache="true">
+        DELETE FROM "users"
+        WHERE "id" = #{userId}
+    </delete>
+
+    <insert id="insertUser" parameterType="md.maxcode.si.domain.User"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id" flushCache="true">
+        INSERT INTO "users"
+        ("username", "identifier", "name", "companyName", "password", "enabled", "type", "salt", "email")
+        VALUES
+        (#{username}, #{identifier}, #{name}, #{companyName}, #{password}, #{enabled}, #{type}, #{salt}, #{email})
+    </insert>
+
+    <insert id="insertRole" parameterType="map"
+            useGeneratedKeys="true" flushCache="true">
+        INSERT INTO "userRoles"
+        ("userId", "authority")
+        VALUES
+        (#{userId}, #{authority})
+    </insert>
+
+    <delete id="deleteRoleUser" parameterType="long">
+        DELETE FROM "userRoles"
+        WHERE "userId" = #{userId}
+    </delete>
+
+    <update id="updateUser" parameterType="md.maxcode.si.domain.User">
+        UPDATE "users"
+
+        SET
+        "username" = #{username},
+        "identifier" = #{identifier},
+        "name" = #{name},
+        "companyName" = #{companyName},
+        "password" = #{password},
+        "enabled" = #{enabled},
+        "type" = #{type},
+        "email" = #{email}
+
+        WHERE "id" = #{id}
+    </update>
+
+    <update id="updateName">
+        UPDATE "users"
+
+        SET
+        "name" = #{name}
+
+        WHERE "id" = #{id}
+    </update>
+
+    <delete id="deleteTempPassword">
+        DELETE FROM "tmpPassword"
+        WHERE "userId" = #{userId}
+    </delete>
+
+    <insert id="writeTempPassword">
+        INSERT INTO "tmpPassword"
+        ("userId", "password")
+        VALUES
+        (#{userId}, #{password})
+    </insert>
+
+    <select id="getTempPassword" parameterType="long" resultType="string">
+        SELECT password
+        FROM "tmpPassword"
+        WHERE "userId" = #{userId}
+    </select>
+
+    <select id="getById" parameterType="long" resultType="md.maxcode.si.domain.User">
+        SELECT *
+        FROM "users"
+        WHERE "id" = #{id}
+        LIMIT 1
+    </select>
+
+    <select id="getByUsername" parameterType="string" resultType="md.maxcode.si.domain.User">
+        SELECT *
+        FROM "users"
+        WHERE "username" = #{username}
+        LIMIT 1
+    </select>
+
+    <select id="getByIdentifier" parameterType="string" resultType="md.maxcode.si.domain.User">
+        SELECT *
+        FROM "users"
+        WHERE "identifier" = #{identifier}
+        LIMIT 1
+    </select>
+
+    <select id="getIdByUsername" parameterType="string" resultType="long">
+        SELECT "id"
+        FROM "users"
+        WHERE "username" = #{username}
+    </select>
+
+</mapper>

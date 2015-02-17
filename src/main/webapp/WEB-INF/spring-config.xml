@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Maxcode B.V.
+  -->
+
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+
+        <property name="driverClassName" value="${dbDriverClassName}"/>
+        <property name="url" value="${dbHost}"/>
+        <property name="username" value="${dbUsername}"/>
+        <property name="password" value="${dbPassword}"/>
+    </bean>
+
+    <!-- transaction manager, use JtaTransactionManager for global tx -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath*:md.maxcode.si.persistence/*.xml"/>
+    </bean>
+
+    <bean id='sqlSession' class='org.mybatis.spring.SqlSessionTemplate'>
+        <constructor-arg index='0' ref='sqlSessionFactory'/>
+    </bean>
+
+    <mybatis:scan base-package="md.maxcode.si.persistence"/>
+
+    <context:component-scan base-package="md.maxcode.si">
+        <context:exclude-filter type="regex" expression="md.maxcode.si.http.*"/>
+    </context:component-scan>
+
+    <context:property-placeholder location="classpath*:main.properties"/>
+
+</beans>

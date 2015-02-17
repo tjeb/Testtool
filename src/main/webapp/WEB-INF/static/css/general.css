@@ -1,0 +1,107 @@
+/*
+ * Copyright (c) 2015 Maxcode B.V.
+ */
+
+body {
+    /*padding-top: 90px;*/
+    padding-bottom: 20px;
+}
+
+.list{
+    max-height: 150px;
+    overflow-y:scroll;
+}
+
+.margin-top-10 {
+
+    margin-top: 10px
+}
+
+.user-menu-color
+{
+    background-color: #6C0087;
+}
+
+.admin-menu-color
+{
+    background-color: #000000;
+}
+
+.navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus
+{
+    background-color: #7a0099;
+}
+
+.navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:hover, .navbar-inverse .navbar-nav > .active > a:focus
+{
+    background-color: #55006a;
+}
+
+tr:hover td.action-buttons.passive
+{
+    opacity: 1;
+}
+
+tr td.action-buttons.passive
+{
+    opacity: .1;
+}
+
+tr:hover td.action-buttons.passive .save-btn
+{
+    opacity: .3;
+}
+
+tr:hover td.action-buttons.passive .revert-btn
+{
+    opacity: .3;
+}
+
+.spacer-20px
+{
+    margin-left: 20px;
+}
+
+.spacer-5px
+{
+    margin-left: 5px;
+}
+
+.spacer-top-5px
+{
+    margin-top: 5px;
+}
+
+.table-disable
+{
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.well.well-preloader
+{
+    background-color: khaki;
+    text-align: center;
+    border-color: beige;
+}
+
+.preloader-container
+{
+    width: 100%;
+    position: fixed;
+    padding: 0;
+    margin: 0;
+    z-index: 9999;
+}
+
+.color-success{
+    color: #4cae4c;
+}
+
+.color-warn{
+    color: orangered;
+}
+
+.color-info{
+    color: #5bc0de;
+}

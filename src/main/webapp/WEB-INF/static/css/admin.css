@@ -1,0 +1,30 @@
+/*
+ * Copyright (c) 2015 Maxcode B.V.
+ */
+
+.interactive-edit input[type="text"], .interactive-edit input[type="email"], .interactive-edit input[type="password"]{
+    border: none;
+    background: none;
+    padding-left: 2px;
+    width: 100%;
+}
+
+.interactive-edit input[type="text"]:hover, .interactive-edit input[type="email"]:hover, .interactive-edit input[type="password"]:hover{
+    border: none;
+    background-color: #f8efc0;
+}
+
+.template-attached-file.xsd.marked.btn-group.open .btn
+{
+    background-color: #8fffdf;
+}
+
+.template-attached-file.xsd.marked .btn
+{
+    background-color: #8fffdf;
+}
+
+.template-attached-file.xsd .btn
+{
+    background-color: #f4f1db;
+}

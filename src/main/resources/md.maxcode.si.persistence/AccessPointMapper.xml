@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Maxcode B.V.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="md.maxcode.si.persistence.AccessPointMapper">
+
+    <cache/>
+
+    <insert id="insert" parameterType="md.maxcode.si.domain.AccessPoint"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO "accessPoints"
+        ("url", "userId", "name", "fileId", "description", "contactEmail", "technicalUrl")
+        VALUES
+        (#{url}, #{userId}, #{name}, #{fileId}, #{description}, #{contactEmail}, #{technicalUrl})
+    </insert>
+
+    <update id="update" parameterType="md.maxcode.si.domain.AccessPoint">
+        UPDATE "accessPoints"
+
+        SET
+        "url" = #{url},
+        "userId" = #{userId},
+        "name" = #{name},
+        "fileId" = #{fileId},
+        "description" = #{description},
+        "contactEmail" = #{contactEmail},
+        "technicalUrl" = #{technicalUrl}
+
+        WHERE "id" = #{id}
+    </update>
+
+    <update id="setUsedForGalaxyGateway" parameterType="md.maxcode.si.domain.AccessPoint">
+        UPDATE "accessPoints"
+
+        SET
+        "usedForGalaxyGateway" = #{usedForGalaxyGateway}
+        WHERE "id" = #{id}
+    </update>
+
+    <delete id="remove">
+        DELETE FROM "accessPoints"
+        WHERE
+        "id" = #{id} AND "userId" = #{userId}
+    </delete>
+
+</mapper>

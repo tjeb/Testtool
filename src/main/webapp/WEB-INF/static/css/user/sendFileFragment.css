@@ -1,0 +1,44 @@
+/*
+ * Copyright (c) 2015 Maxcode B.V.
+ */
+
+.popover {
+    position: fixed;
+    border: 1px solid rgba(223, 213, 213, 1);
+
+    -webkit-box-shadow: 0 9px 80px rgba(0, 0, 0, .3);
+    box-shadow: 0 9px 80px rgba(0, 0, 0, .3);
+}
+
+.popover.left {
+    max-width: 250px;
+}
+
+.popover.left .arrow {
+    top: 18px;
+    border-left-color: rgba(223, 213, 213, 1);
+}
+
+.popover-title {
+    /*width: 200px;*/
+    height: 30px;
+    overflow: hidden;
+}
+
+.preloader-container {
+    background-color: rgb(255, 0, 255);
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.7);
+    top: 52px;
+    left: 0;
+}
+
+#urlArea {
+    border: none;
+    width: 100%;
+    height: 125px
+}
