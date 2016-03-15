@@ -54,8 +54,23 @@ public class ValidationService {
         List<XSLErrorInfo> result = new ArrayList<>();
         Builder builder = new Builder();
 
-        Document in;
-        in = builder.build(new File(xmlPath_));
+
+        // If the file was sent over AS2, it is wrapped in a SBDH envelope
+        // Oxalis does not remove this, unfortunately, so we'll
+        // have to do it ourselves (or shove it up even one layer more...)
+        // For some discussion, see https://github.com/difi/oxalis/pull/241
+        Document in = builder.build(new File(xmlPath_));
+        Element root = in.getRootElement();
+        if (root.getLocalName() == "StandardBusinessDocument") {
+            // take out the invoice, and replace the document with it
+            Elements children = root.getChildElements(); 
+            for (int i = 0; i < children.size(); i++) {
+                Element invoice = children.get(i);
+                if (invoice.getLocalName() != "StandardBusinessDocumentHeader") {
+                    in = new Document((Element)invoice.copy());
+                }
+            }
+        }
 
         Document stylesheet = builder.build(new File(xslPath_));
 
