@@ -6,6 +6,7 @@ package md.maxcode.si.service;
 
 import com.lisasoft.wfsvalidator.validator.ValidationError;
 import md.maxcode.si.tools.UtilsComponent;
+import md.maxcode.si.tools.ActorID;
 import md.maxcode.si.xsl.XSLErrorInfo;
 import md.maxcode.si.xsl.XSLParseException;
 import nu.xom.*;
@@ -34,6 +35,18 @@ public class ValidationService {
     private final Logger logger = Logger.getLogger(getClass().getName());
     @Autowired
     private UtilsComponent utilsComponent;
+    private XPathContext xpc;
+    private static final String nsUri = "http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader";
+    private static final String invUri = "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2";
+    private static final String cacUri = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2";
+    private static final String cbcUri = "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2";
+ 
+    public ValidationService() {
+        xpc = new XPathContext("sbdh", nsUri);
+        xpc.addNamespace("inv", invUri);
+        xpc.addNamespace("cac", cacUri);
+        xpc.addNamespace("cbc", cbcUri);
+     }
 
     public void againstXSD(String xsdPath_, String xmlPath_) throws IOException, SAXException {
         Source schemaFile = new StreamSource(new File(xsdPath_));
@@ -50,10 +63,21 @@ public class ValidationService {
         FileInputStream fileInputStream = new FileInputStream(new File(xmlPath_));
     }
 
+    private ActorID getActorIDFromInvoice(Document in, String path) {
+        ActorID actor = null;
+        Nodes nodes = in.query(path, xpc);
+        int i;
+        for (i = 0; i < nodes.size(); i++) {
+            Element el = (Element)nodes.get(i);
+            actor = new ActorID(el.getAttributeValue("schemeID"),
+                                el.getValue());
+        }
+        return actor;
+     }
+
     public List<XSLErrorInfo> againstXSL(String xslPath_, String xmlPath_) throws ParsingException, IOException, XSLException, XSLParseException {
         List<XSLErrorInfo> result = new ArrayList<>();
         Builder builder = new Builder();
-
 
         // If the file was sent over AS2, it is wrapped in a SBDH envelope
         // Oxalis does not remove this, unfortunately, so we'll
@@ -61,12 +85,25 @@ public class ValidationService {
         // For some discussion, see https://github.com/difi/oxalis/pull/241
         Document in = builder.build(new File(xmlPath_));
         Element root = in.getRootElement();
+        ActorID receiverActorID = null;
         if (root.getLocalName() == "StandardBusinessDocument") {
             // take out the invoice, and replace the document with it
             Elements children = root.getChildElements(); 
             for (int i = 0; i < children.size(); i++) {
                 Element invoice = children.get(i);
-                if (invoice.getLocalName() != "StandardBusinessDocumentHeader") {
+                if (invoice.getLocalName() == "StandardBusinessDocumentHeader") {
+                    // If there is a Recipitent here, we want to have one additional
+                    // check, apart from the actual Schematron checks (which are only
+                    // on the invoice); the recipient must match either 
+                    Nodes receiverNodes = invoice.query("./sbdh:Receiver/sbdh:Identifier", xpc);
+                    if (receiverNodes.size() > 0) {
+                        Element receiver = (Element)receiverNodes.get(0);
+                        String authority = receiver.getAttributeValue("Authority", nsUri);
+                        receiverActorID = new ActorID(receiver.getAttributeValue("Authority"),
+                                                      receiver.getValue());
+                    }
+                    //String authority =  
+                } else {
                     in = new Document((Element)invoice.copy());
                 }
             }
@@ -107,6 +144,25 @@ public class ValidationService {
 
                     logger.warning(xslError.toString());
                 }
+            }
+        }
+
+        // Additional check, see above
+        if (receiverActorID != null) {
+            // Should match one of these
+            ActorID customerActorID = getActorIDFromInvoice(in, "/inv:Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID");
+            if (customerActorID == null) {
+                customerActorID = getActorIDFromInvoice(in, "doc:Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID");
+            }
+            if (customerActorID != null && !receiverActorID.equals(customerActorID)) {
+                final XSLErrorInfo xslError = new XSLErrorInfo();
+                xslError.setXSLFileName(FilenameUtils.getName(xslPath_));
+                xslError.setXMLFileName(FilenameUtils.getName(xmlPath_));
+                xslError.setTest("SI-INV-AS2-RECEIVER");
+                xslError.setFlag("warning");
+                xslError.setLocation("");
+                xslError.setContent("AS2 Receiver identity does not match AccountingCustomerParty");
+                result.add(xslError);
             }
         }
 
