@@ -25,6 +25,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,16 +47,80 @@ public class ValidationService {
         xpc.addNamespace("inv", invUri);
         xpc.addNamespace("cac", cacUri);
         xpc.addNamespace("cbc", cbcUri);
-     }
+    }
 
-    public void againstXSD(String xsdPath_, String xmlPath_) throws IOException, SAXException {
+    /**
+     * Checks if the document has an SBDH, if so, it returns the encapsulated actual document
+     * and receiver string. If not, it returns the document itself and null.
+     */
+
+    /**
+     * Local helper class to unwrap the UBL document from an AS2 SBDH envelope
+     * During construction, it checks whether the document is wrapped with an SBDH.
+     * If so, it replaces the document with the wrapped document and sets the receiver
+     * ActorID
+     */
+    class ReceivedDocument {
+        private Document doc;
+        private ActorID receiver;
+        
+        public ReceivedDocument(String xmlPath_) throws IOException, ParsingException {
+            Builder builder = new Builder();
+            doc = builder.build(xmlPath_);
+            receiver = null;
+
+            Element root = doc.getRootElement();
+            ActorID receiverActorID = null;
+            if (root.getLocalName() == "StandardBusinessDocument") {
+                // take out the invoice, and replace the document with it
+                Elements children = root.getChildElements(); 
+                for (int i = 0; i < children.size(); i++) {
+                    Element wrappedElement = children.get(i);
+                    if (wrappedElement.getLocalName() == "StandardBusinessDocumentHeader") {
+                        // If there is a Recipitent here, we want to have one additional
+                        // check, apart from the actual Schematron checks (which are only
+                        // on the invoice); the recipient must match either 
+                        Nodes receiverNodes = wrappedElement.query("./sbdh:Receiver/sbdh:Identifier", xpc);
+                        if (receiverNodes.size() > 0) {
+                            Element receiverElement = (Element)receiverNodes.get(0);
+                            String authority = receiverElement.getAttributeValue("Authority", nsUri);
+                            receiver = new ActorID(receiverElement.getAttributeValue("Authority"),
+                                                   receiverElement.getValue());
+                        }
+                    } else {
+                        doc = new Document((Element)wrappedElement.copy());
+                    }
+                }
+            }
+        }
+
+        public boolean wasSBDH() {
+            return receiver != null;
+        }
+
+        public Document getDocument() {
+            return doc;
+        }
+
+        public ActorID getReceiver() {
+            return receiver;
+        }
+    }
+
+    public void againstXSD(String xsdPath_, String xmlPath_) throws IOException, SAXException, ParsingException {
         Source schemaFile = new StreamSource(new File(xsdPath_));
         Source xmlFile = new StreamSource(new File(xmlPath_));
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(schemaFile);
+
+        Document in = new ReceivedDocument(xmlPath_).getDocument();
+        
         Validator validator = schema.newValidator();
 
-        validator.validate(xmlFile);
+        // there does not appear to be a direct way to pass a xom Document
+        // to the validator
+        ByteArrayInputStream instream = new ByteArrayInputStream(in.toXML().getBytes());
+        validator.validate(new StreamSource(instream));
         logger.info(xmlFile.getSystemId() + " is valid");
     }
 
@@ -83,37 +148,13 @@ public class ValidationService {
         // Oxalis does not remove this, unfortunately, so we'll
         // have to do it ourselves (or shove it up even one layer more...)
         // For some discussion, see https://github.com/difi/oxalis/pull/241
-        Document in = builder.build(new File(xmlPath_));
-        Element root = in.getRootElement();
-        ActorID receiverActorID = null;
-        if (root.getLocalName() == "StandardBusinessDocument") {
-            // take out the invoice, and replace the document with it
-            Elements children = root.getChildElements(); 
-            for (int i = 0; i < children.size(); i++) {
-                Element invoice = children.get(i);
-                if (invoice.getLocalName() == "StandardBusinessDocumentHeader") {
-                    // If there is a Recipitent here, we want to have one additional
-                    // check, apart from the actual Schematron checks (which are only
-                    // on the invoice); the recipient must match either 
-                    Nodes receiverNodes = invoice.query("./sbdh:Receiver/sbdh:Identifier", xpc);
-                    if (receiverNodes.size() > 0) {
-                        Element receiver = (Element)receiverNodes.get(0);
-                        String authority = receiver.getAttributeValue("Authority", nsUri);
-                        receiverActorID = new ActorID(receiver.getAttributeValue("Authority"),
-                                                      receiver.getValue());
-                    }
-                    //String authority =  
-                } else {
-                    in = new Document((Element)invoice.copy());
-                }
-            }
-        }
+        ReceivedDocument doc = new ReceivedDocument(xmlPath_);
 
         Document stylesheet = builder.build(new File(xslPath_));
 
         XSLTransform transform = new XSLTransform(stylesheet);
 
-        Nodes nodes = transform.transform(in);
+        Nodes nodes = transform.transform(doc.getDocument());
 
         boolean valid = true;
         if (nodes.size() < 1) {
@@ -148,13 +189,13 @@ public class ValidationService {
         }
 
         // Additional check, see above
-        if (receiverActorID != null) {
+        if (doc.wasSBDH()) {
             // Should match one of these
-            ActorID customerActorID = getActorIDFromInvoice(in, "/inv:Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID");
+            ActorID customerActorID = getActorIDFromInvoice(doc.getDocument(), "/inv:Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID");
             if (customerActorID == null) {
-                customerActorID = getActorIDFromInvoice(in, "doc:Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID");
+                customerActorID = getActorIDFromInvoice(doc.getDocument(), "doc:Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID");
             }
-            if (customerActorID != null && !receiverActorID.equals(customerActorID)) {
+            if (customerActorID != null && !customerActorID.equals(doc.getReceiver())) {
                 final XSLErrorInfo xslError = new XSLErrorInfo();
                 xslError.setXSLFileName(FilenameUtils.getName(xslPath_));
                 xslError.setXMLFileName(FilenameUtils.getName(xmlPath_));
