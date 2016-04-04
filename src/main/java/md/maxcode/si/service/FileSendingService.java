@@ -5,7 +5,7 @@
 package md.maxcode.si.service;
 
 import com.sun.xml.ws.transport.http.client.HttpTransportPipe;
-import eu.peppol.start.identifier.PeppolDocumentTypeId;
+import eu.peppol.identifier.PeppolDocumentTypeId;
 import eu.peppol.util.GlobalConfiguration;
 import md.maxcode.si.domain.ScheduledDocumentSending;
 import md.maxcode.si.domain.UserFile;
