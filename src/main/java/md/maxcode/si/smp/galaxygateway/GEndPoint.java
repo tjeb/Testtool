@@ -6,7 +6,7 @@ package md.maxcode.si.smp.galaxygateway;
 
 public class GEndPoint {
     private int endpointId;
-    private String transportProfile = "busdox-transport-start";
+    private String transportProfile = "busdox-transport-as2-ver1p0";
     private String endpointAddress;
     private Boolean requireBusinessLevelSignature = false;
     private int minimumAuthenticationLevel = 1;
