@@ -73,6 +73,7 @@ public class UserFileAPI extends TTBaseAPI {
                     typeId_,
                     getUser().getId(),
                     nameHash,
+                    null,
                     name,
                     multipartFile_.getSize(),
                     extension,

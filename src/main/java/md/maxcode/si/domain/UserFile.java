@@ -14,6 +14,7 @@ public class UserFile implements Serializable {
     private Long id;
     private String name;
     private String fileName;
+    private String from;
     private Long size;
     private Long typeId;
     private String extension;
@@ -62,6 +63,14 @@ public class UserFile implements Serializable {
 
     public void setFileName(String fileName_) {
         fileName = fileName_;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from_) {
+        from = from_;
     }
 
     public String getName() {

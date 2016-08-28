@@ -25,7 +25,8 @@
         <thead>
         <tr>
             <th>Id</th>
-            <th style="min-width: 149px">Added time</th>
+            <th style="min-width: 149px">Date</th>
+            <th>From</th>
             <th>Name</th>
             <th>Type</th>
             <th style="min-width: 90px">Size</th>
@@ -45,6 +46,12 @@
                     <fmt:formatDate type="both"
                                     dateStyle="short" timeStyle="short"
                                     value="${file.addedTimeAsDate}"/>
+                </td>
+                <td>
+                    <c:choose>
+                        <c:when test="${file.from == null}">Uploaded by user</c:when>
+                        <c:when test="${file.from != null}">${file.from}</c:when>
+                    </c:choose>
                 </td>
                 <td>
                     <div class="btn-group">

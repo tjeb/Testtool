@@ -130,6 +130,7 @@ public class FileService {
     public UserFile insertFile(final Long typeId_,
                                final Long userId_,
                                final String fileName,
+                               final String from_,
                                final String name_,
                                final Long size_,
                                final String extension_,
@@ -140,6 +141,7 @@ public class FileService {
         file.setUserId(userId_);
         file.setName(name_);
         file.setFileName(fileName);
+        file.setFrom(from_);
         file.setSize(size_);
         file.setExtension(extension_);
         file.setReceivedMetadataId(receivedMetadataId);

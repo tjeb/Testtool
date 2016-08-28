@@ -186,6 +186,7 @@ public class InboundDocumentsMonitorService {
                     typeId,
                     user.getId(),
                     nameHash,
+                    metadataFile.getSenderIdentifier(),
                     metadataFile.getMessageIdentifier(),
                     new File(filePath).length(),
                     extension,
