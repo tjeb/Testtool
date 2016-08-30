@@ -309,6 +309,7 @@ ALTER TABLE public."tmpPassword" OWNER TO postgres;
 CREATE TABLE "userFiles" (
   id bigint NOT NULL,
   name text NOT NULL,
+  "from" charachter varying(32),
   "fileName" character varying(32) NOT NULL,
   size integer NOT NULL,
   "userId" bigint NOT NULL,

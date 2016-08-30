@@ -15,6 +15,7 @@
         INSERT INTO "userFiles"
 
         ("name",
+        "from",
         "fileName",
         "size",
         "userId",
@@ -27,6 +28,7 @@
         VALUES
 
         (#{name},
+        #{from},
         #{fileName},
         #{size},
         #{userId},
