@@ -27,7 +27,8 @@
         <table id="listFiles" class="table table-hover">
             <thead>
             <tr>
-                <th>Added time</th>
+                <th>Date</th>
+                <th>From</th>
                 <th>Name</th>
                 <th>Type</th>
             </tr>
@@ -44,6 +45,12 @@
                         <fmt:formatDate type="both"
                                         dateStyle="short" timeStyle="short"
                                         value="${file.addedTimeAsDate}"/>
+                    </td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${file.from == null}">Uploaded by user</c:when>
+                            <c:when test="${file.from != null}">${file.from}</c:when>
+                        </c:choose>
                     </td>
                     <td>
                         <div class="btn-group">
