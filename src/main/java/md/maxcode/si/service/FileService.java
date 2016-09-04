@@ -135,7 +135,9 @@ public class FileService {
                                final Long size_,
                                final String extension_,
                                final Long receivedMetadataId,
-                               final Boolean validated_, final String validationInfo) {
+                               final Boolean validated_,
+                               final String validationInfo,
+                               final Boolean mlrSent_) {
         UserFile file = new UserFile();
         file.setTypeId(typeId_);
         file.setUserId(userId_);
@@ -150,6 +152,8 @@ public class FileService {
 
         fileMapper.insertFile(file);
         file.setAddedTime(fileMapper.getAddedTime(file.getId()));
+
+        file.setMlrSent(mlrSent_);
 
         return file;
     }

@@ -274,6 +274,95 @@ public class FileSendingService {
         }
     }
 
+    public void sendMLR(final Long userId,
+                        final Long fileId,
+                        final String senderPeppolId) throws Exception {
+        UserFile baseFile = fileService.getById(fileId, userId);
+
+        String filePath = utilsComponent.getFullFilePath(ttSettings.storeUserFiles, baseFile.getFileName());
+        String senderId = senderPeppolId;
+
+        // Do we construct the MLR here or let Oxalis handle that?
+        String command = ttSettings.java_bin + " " +
+                "-jar \"" + ttSettings.oxalis_sendreply_jar + "\" ";
+
+        command += "-f /home/jelte/repos/SI/oxalis/oxalis-sendreply/example_response_ok_minimal.xml ";
+        command += "-i NONEXISTENT_FILEID ";
+
+        System.out.println("Sending command to Oxalis : " + command);
+
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec(new String[]{ttSettings.terminal});
+            SyncPipe errorPipe = new SyncPipe(p.getErrorStream(), System.err);
+            SyncPipe outPipe = new SyncPipe(p.getInputStream(), System.out);
+            new Thread(errorPipe).start();
+            new Thread(outPipe).start();
+            PrintWriter stdin = new PrintWriter(p.getOutputStream());
+
+            stdin.println(command);
+            stdin.close();
+
+            int returnCode = p.waitFor();
+            System.out.println("Return code = " + returnCode);
+
+            String errorMessage = errorPipe.getResult().replace("\u0000", "").replace("\t", "\r\n").replace("Caused by:", "\r\nCaused by:");
+            errorMessage += outPipe.getResult().replace("\u0000", "").replace("\t", "\r\n").replace("Caused by:", "\r\nCaused by:");
+            errorMessage = URLDecoder.decode(errorMessage, "UTF-8");
+
+            try {
+                errorMessage = URLDecoder.decode(errorMessage, "UTF-8");
+            } catch (Throwable e) {
+            }
+
+            String outMessage = outPipe.getResult().replace("\u0000", "").replace("\t", "\r\n");
+
+            try {
+                outMessage = URLDecoder.decode(outMessage, "UTF-8");
+            } catch (Throwable e) {
+            }
+
+            if (returnCode != 0 || !outMessage.contains("was assigned transmissionId")) {
+
+                StringBuilder string = new StringBuilder("\r\n\r\n");
+                int i = 0;
+
+                Scanner scanner = new Scanner(errorMessage);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+
+                    if (line.equals("")) {
+                        continue;
+                    }
+
+                    if (line.startsWith("Caused by:") || line.startsWith("java.lang.RuntimeException:")) {
+                        string.append("  " + (++i) + ".     " + line + "\r\n\r\n------------------------------\r\n\r\n");
+                    }
+
+                }
+                scanner.close();
+
+
+                System.out.println("---------------------------------------------------------------");
+                System.out.println("-------------------------  START  -----------------------------");
+                System.out.println("---------------------------------------------------------------");
+                System.out.println(errorMessage);
+                System.out.println("---------------------------------------------------------------");
+                System.out.println("---------------------------  END  -----------------------------");
+                System.out.println("---------------------------------------------------------------");
+                throw new FaultMessage("Error while sending file, details:\r\n" + string, new StartException());
+            }
+        } catch (IOException e) {
+            logger.severe(e.getMessage());
+            e.printStackTrace();
+            throw new FaultMessage("Error while executing java command", new StartException());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            logger.severe(e.getMessage());
+            throw new FaultMessage("Error while executing java command", new StartException());
+        }
+    }
+
     public String getFileSendingTriggerParams(final Long apConfigId_, final Long fileId_, final String senderPeppolId_, final String recipientPeppolId_) throws SignatureException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
         String triggerParams;
 

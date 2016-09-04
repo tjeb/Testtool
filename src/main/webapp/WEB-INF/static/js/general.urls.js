@@ -15,5 +15,6 @@ TT.urls = {
     userAPAPI : TT.CONTEXT_PATH + '/api/user/ap/',
     userAPAPI_getAll : TT.CONTEXT_PATH + '/api/user/ap/getAll',
     userAPAPI_sendFile : TT.CONTEXT_PATH + '/api/user/ap/sendFileToAP',
+    userAPAPI_sendMLR : TT.CONTEXT_PATH + '/api/user/ap/sendMLR',
     userSMPAPI : TT.CONTEXT_PATH + '/api/user/smp/'
 };

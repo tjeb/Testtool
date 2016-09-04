@@ -121,6 +121,15 @@
                                 <!--<li><a href="#" data-ap-id="0" title="Browse for more...">
                                     <span class="glyphicon glyphicon-folder-open"></span> Browse for more...</a></li>-->
                             </ul>
+                            <c:choose>
+                                <c:when test="${file.from == null}">useruploaded</c:when>
+                                <c:when test="${file.from != null}">
+                                    <c:choose>
+                                        <c:when test="${file.mlrSent}"><button type="button" class="btn btn-xs btn-default" disabled="disabled">MLR Sent</button></c:when>
+                                        <c:otherwise><button type="button" class="btn btn-xs btn-default btn-send-mlr" data-file-id="${file.id}">Send MLR</button></c:otherwise>
+                                    </c:choose>
+                                </c:when>
+                            </c:choose>
                         </div>
 
                         <button data-id="${file.id}" class="remove-btn btn btn-xs btn-link"><span
@@ -149,7 +158,7 @@
 <jsp:include page="/WEB-INF/pages/commonJS.jsp"/>
 <script type="application/javascript" src="${pageContext.request.contextPath}/static/js/user/listFiles.js"></script>
 <script type="application/javascript" src="${pageContext.request.contextPath}/static/js/user/sendFileToAp.js"></script>
-
+<script type="application/javascript" src="${pageContext.request.contextPath}/static/js/user/sendMLR.js"></script>
 </body>
 
 </html>

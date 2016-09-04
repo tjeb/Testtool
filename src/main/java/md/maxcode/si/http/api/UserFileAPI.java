@@ -79,7 +79,8 @@ public class UserFileAPI extends TTBaseAPI {
                     extension,
                     null,
                     validated,
-                    validationInfo);
+                    validationInfo,
+                    false);
 
             return new Response(false, !validated, utilsComponent.toJsonString(file), validationInfo);
         }

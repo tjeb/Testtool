@@ -25,6 +25,7 @@ public class ReceivedFileMetadata {
     private String remote;
     private String apPrincipal;
     private Long id;
+    private Boolean mlrSent;
 
 
     public ReceivedFileMetadata(JSONObject outerJsonObject, String filePath, String channelId) throws JSONException {
@@ -40,6 +41,7 @@ public class ReceivedFileMetadata {
         processIdentifier = jsonObject.getString("profileTypeIdentifier");
         remote = jsonObject.getString("userAgent");
         apPrincipal = jsonObject.getString("sendingAccessPointPrincipal");
+        mlrSent = jsonObject.getBoolean("replied");
         this.channelIdentifier = channelId;
     }
 
@@ -53,6 +55,7 @@ public class ReceivedFileMetadata {
         processIdentifier = properties.getProperty("profileTypeIdentifier");
         remote = properties.getProperty("Remote");
         apPrincipal = properties.getProperty("sendingAccessPointPrincipal");
+        mlrSent = Boolean.parseBoolean(properties.getProperty("replied"));
     }
 
     public Date getTimestampAsDate() throws ParseException {
@@ -152,6 +155,14 @@ public class ReceivedFileMetadata {
 
     public Long geId() {
         return id;
+    }
+
+    public void setMLRSent(final Boolean mlrSent) {
+        this.mlrSent = mlrSent;
+    }
+
+    public Boolean getMLRSent() {
+        return mlrSent;
     }
 }
 

@@ -106,6 +106,24 @@ public class AccessPointsAPI extends TTBaseAPI {
         return new Response(false);
     }
 
+    @RequestMapping(value = "sendMLR", method = {RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response sendMLR(@RequestParam(value = "fileId", required = true) Long fileId_) {
+        if (fileId_ < 1) {
+            return new Response("Invalid parameters for sending an MLR", true);
+        }
+
+        try {
+            fileSendingService.sendMLR(getUser().getId(), fileId_, getUser().getIdentifier());
+        } catch (Throwable e_) {
+            System.err.println(e_.getMessage());
+            logger.severe("An error has occurred while trying to send the MLR: " + e_.getMessage());
+            return new Response(e_);
+        }
+
+        return new Response(false);
+    }
+
     @RequestMapping(method = {RequestMethod.DELETE}, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response sendFileToAP(@RequestParam(value = "id", required = true) Long id) {

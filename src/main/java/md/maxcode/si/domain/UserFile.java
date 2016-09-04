@@ -23,6 +23,7 @@ public class UserFile implements Serializable {
     private Boolean validated;
     private String validationInfo;
     private Long receivedMetadataId;
+    private Boolean mlrSent;
 
     public String getValidationInfo() {
         return validationInfo;
@@ -134,5 +135,13 @@ public class UserFile implements Serializable {
 
     public void setReceivedMetadataId(final Long receivedMetadataId) {
         this.receivedMetadataId = receivedMetadataId;
+    }
+
+    public Boolean getMlrSent() {
+        return mlrSent;
+    }
+
+    public void setMlrSent(Boolean mlrSent) {
+        this.mlrSent = mlrSent;
     }
 }

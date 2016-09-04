@@ -24,7 +24,7 @@
         "validated",
         "receivedMetadataId",
         "validationInfo",
-        "MLRSent")
+        "mlrSent")
 
         VALUES
 
@@ -38,7 +38,7 @@
         #{validated},
         #{receivedMetadataId},
         #{validationInfo},
-        #{MLRSent})
+        #{mlrSent})
     </insert>
 
     <update id="updateFile" parameterType="md.maxcode.si.domain.UserFile">
@@ -80,11 +80,13 @@
         <id property="id" column="file_id"/>
         <result property="addedTime" column="file_addedTime"/>
         <result property="name" column="file_name"/>
+        <result property="from" column="from"/>
         <result property="fileName" column="fileName"/>
         <result property="userId" column="userId"/>
         <result property="typeId" column="typeId"/>
         <result property="extension" column="extension"/>
         <result property="marked" column="marked"/>
+        <result property="mlrSent" column="mlrSent"/>
     </resultMap>
 
     <select id="getAllWithTheirAttachments" resultMap="FileTypeMap">

@@ -191,7 +191,9 @@ public class InboundDocumentsMonitorService {
                     new File(filePath).length(),
                     extension,
                     metadataFile.geId(),
-                    validated, validationInfo);
+                    validated,
+                    validationInfo,
+                    metadataFile.getMLRSent());
 
             System.out.println("File successfully added --> " + filePath);
             System.out.println("RecipientIdentifier --> " + metadataFile.getRecipientIdentifier());
