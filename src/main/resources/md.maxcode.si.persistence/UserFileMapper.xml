@@ -23,7 +23,8 @@
         "extension",
         "validated",
         "receivedMetadataId",
-        "validationInfo")
+        "validationInfo",
+        "MLRSent")
 
         VALUES
 
@@ -36,7 +37,8 @@
         #{extension},
         #{validated},
         #{receivedMetadataId},
-        #{validationInfo})
+        #{validationInfo},
+        #{MLRSent})
     </insert>
 
     <update id="updateFile" parameterType="md.maxcode.si.domain.UserFile">
