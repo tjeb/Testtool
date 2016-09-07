@@ -9,6 +9,9 @@ import eu.peppol.identifier.PeppolDocumentTypeId;
 import eu.peppol.util.GlobalConfiguration;
 import md.maxcode.si.domain.ScheduledDocumentSending;
 import md.maxcode.si.domain.UserFile;
+import md.maxcode.si.domain.User;
+import md.maxcode.si.domain.ReceivedFileMetadata;
+import md.maxcode.si.persistence.ReceivedMetadataMapper;
 import md.maxcode.si.persistence.AccessPointMapper;
 import md.maxcode.si.tools.SyncPipe;
 import md.maxcode.si.tools.TTSettings;
@@ -46,6 +49,8 @@ public class FileSendingService {
     private UtilsComponent utilsComponent;
     @Autowired(required = true)
     private AccessPointMapper accessPointMapper;
+    @Autowired(required = true)
+    private ReceivedMetadataMapper receivedMetadataMapper;
 
     public void sendFileToAP(final Long userId, final String base64Input_, final String providedHMACSignature_) throws Exception {
         String json = new String(Base64.decodeBase64(base64Input_));
@@ -274,20 +279,22 @@ public class FileSendingService {
         }
     }
 
-    public void sendMLR(final Long userId,
-                        final Long fileId,
-                        final String senderPeppolId) throws Exception {
-        UserFile baseFile = fileService.getById(fileId, userId);
+    public void sendMLR(final User user,
+                        final Long fileId) throws Exception {
+        UserFile baseFile = fileService.getById(fileId, user.getId());
+        Long receivedMetadataId = baseFile.getReceivedMetadataId();
+        ReceivedFileMetadata metadata = receivedMetadataMapper.getById(receivedMetadataId);
 
-        String filePath = utilsComponent.getFullFilePath(ttSettings.storeUserFiles, baseFile.getFileName());
-        String senderId = senderPeppolId;
+        String filePath = metadata.getMessageFileName();
+        String senderId = user.getIdentifier();
 
         // Do we construct the MLR here or let Oxalis handle that?
         String command = ttSettings.java_bin + " " +
-                "-jar \"" + ttSettings.oxalis_sendreply_jar + "\" ";
+                "-jar \"" + ttSettings.oxalis_sendreply_jar + "\"";
 
-        command += "-f /home/jelte/repos/SI/oxalis/oxalis-sendreply/example_response_ok_minimal.xml ";
-        command += "-i NONEXISTENT_FILEID ";
+        command += " -c AP";
+        command += " -d " + filePath;
+        //command += "";
 
         System.out.println("Sending command to Oxalis : " + command);
 

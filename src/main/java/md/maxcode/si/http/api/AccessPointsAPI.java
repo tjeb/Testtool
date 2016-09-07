@@ -114,7 +114,7 @@ public class AccessPointsAPI extends TTBaseAPI {
         }
 
         try {
-            fileSendingService.sendMLR(getUser().getId(), fileId_, getUser().getIdentifier());
+            fileSendingService.sendMLR(getUser(), fileId_);
         } catch (Throwable e_) {
             System.err.println(e_.getMessage());
             logger.severe("An error has occurred while trying to send the MLR: " + e_.getMessage());

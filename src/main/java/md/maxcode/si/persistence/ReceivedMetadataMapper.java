@@ -13,7 +13,7 @@ import java.util.List;
 public interface ReceivedMetadataMapper {
 
     @Select("SELECT * FROM \"receivedMetadata\" WHERE \"id\"=#{id}")
-    List<User> getById(final Long id);
+    ReceivedFileMetadata getById(final Long id);
 
     void write(ReceivedFileMetadata fileMetadata);
 

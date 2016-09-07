@@ -28,6 +28,9 @@ public class ReceivedFileMetadata {
     private Boolean mlrSent;
 
 
+    public ReceivedFileMetadata() {
+    }
+
     public ReceivedFileMetadata(JSONObject outerJsonObject, String filePath, String channelId) throws JSONException {
         JSONObject jsonObject = outerJsonObject.getJSONObject("PeppolMessageMetaData");
 
