@@ -6,7 +6,7 @@ package md.maxcode.si.domain;
 
 import md.maxcode.si.security.Role;
 import md.maxcode.si.tools.UserTypeEnum;
-import org.postgresql.util.PGobject;
+//import org.postgresql.util.PGobject;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
@@ -125,10 +125,11 @@ public class User implements UserDetails {
         type = UserTypeEnum.valueOf(type_);
     }
 
+/*
     public void setType(PGobject PGObject_) {
         type = UserTypeEnum.valueOf(PGObject_.getValue());
     }
-
+*/
     public boolean isCredentialsNonExpired() {
         return credentialsNonExpired;
     }
