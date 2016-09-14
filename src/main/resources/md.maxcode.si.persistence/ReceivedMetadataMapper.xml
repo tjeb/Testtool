@@ -10,10 +10,10 @@
 
     <insert id="write" parameterType="md.maxcode.si.domain.ReceivedFileMetadata"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id" flushCache="true">
-        INSERT INTO "receivedMetadata"
+        INSERT INTO received_metadata
 
-        ("timeStamp", "messageFileName", "messageIdentifier", "channelIdentifier", "recipientIdentifier",
-        "senderIdentifier", "documentIdentifier", "processIdentifier", "remote", "apPrincipal")
+        (timeStamp, messageFileName, messageIdentifier, channelIdentifier, recipientIdentifier,
+        senderIdentifier, documentIdentifier, processIdentifier, remote, apPrincipal)
 
         VALUES
 
@@ -23,8 +23,8 @@
     </insert>
 
     <delete id="remove" flushCache="true">
-        DELETE FROM "receivedMetadata"
-        WHERE "id" = #{id}
+        DELETE FROM received_metadata
+        WHERE id = #{id}
     </delete>
 
 </mapper>

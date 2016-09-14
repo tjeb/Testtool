@@ -16,15 +16,15 @@ public interface GParticipantIdMapper {
 
     void remove(Long id);
 
-    @Select("SELECT \"participantIdValue\" FROM \"gParticipantIdRef\" WHERE \"userId\" = #{id}")
+    @Select("SELECT participantIdValue FROM g_participant_id_ref WHERE userId = #{id}")
     List<String> getParticipantIds(Long id);
 
-    @Select("SELECT * FROM \"gParticipantIdRef\" WHERE \"id\" = #{id}")
+    @Select("SELECT * FROM g_participant_id_ref WHERE id = #{id}")
     Map getById(Long id);
 
     void update(GParticipantIdentifierReference value);
 
-    @Select("SELECT * FROM \"gParticipantIdRef\" WHERE \"participantIdValue\" = #{participantId}")
+    @Select("SELECT * FROM g_participant_id_ref WHERE participantIdValue = #{participantId}")
     GParticipantIdentifierReference getByParticipantId(String participantId);
 
     void removeByParticipantId(String participantId);

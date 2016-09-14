@@ -9,99 +9,99 @@
 <mapper namespace="md.maxcode.si.persistence.UserMapper">
 
     <delete id="deleteUser" flushCache="true">
-        DELETE FROM "users"
-        WHERE "id" = #{userId}
+        DELETE FROM users
+        WHERE id = #{userId}
     </delete>
 
     <insert id="insertUser" parameterType="md.maxcode.si.domain.User"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id" flushCache="true">
-        INSERT INTO "users"
-        ("username", "identifier", "name", "companyName", "password", "enabled", "type", "salt", "email")
+        INSERT INTO users
+        (username, identifier, name, companyName, password, enabled, type, salt, email)
         VALUES
         (#{username}, #{identifier}, #{name}, #{companyName}, #{password}, #{enabled}, #{type}, #{salt}, #{email})
     </insert>
 
     <insert id="insertRole" parameterType="map"
             useGeneratedKeys="true" flushCache="true">
-        INSERT INTO "userRoles"
-        ("userId", "authority")
+        INSERT INTO user_roles
+        (userId, authority)
         VALUES
         (#{userId}, #{authority})
     </insert>
 
     <delete id="deleteRoleUser" parameterType="long">
-        DELETE FROM "userRoles"
-        WHERE "userId" = #{userId}
+        DELETE FROM user_roles
+        WHERE userId = #{userId}
     </delete>
 
     <update id="updateUser" parameterType="md.maxcode.si.domain.User">
-        UPDATE "users"
+        UPDATE users
 
         SET
-        "username" = #{username},
-        "identifier" = #{identifier},
-        "name" = #{name},
-        "companyName" = #{companyName},
-        "password" = #{password},
-        "enabled" = #{enabled},
-        "type" = #{type},
-        "email" = #{email}
+        username = #{username},
+        identifier = #{identifier},
+        name = #{name},
+        companyName = #{companyName},
+        password = #{password},
+        enabled = #{enabled},
+        type = #{type},
+        email = #{email}
 
-        WHERE "id" = #{id}
+        WHERE id = #{id}
     </update>
 
     <update id="updateName">
-        UPDATE "users"
+        UPDATE users
 
         SET
-        "name" = #{name}
+        name = #{name}
 
-        WHERE "id" = #{id}
+        WHERE id = #{id}
     </update>
 
     <delete id="deleteTempPassword">
-        DELETE FROM "tmpPassword"
-        WHERE "userId" = #{userId}
+        DELETE FROM tmp_password
+        WHERE userId = #{userId}
     </delete>
 
     <insert id="writeTempPassword">
-        INSERT INTO "tmpPassword"
-        ("userId", "password")
+        INSERT INTO tmp_password
+        (userId, password)
         VALUES
         (#{userId}, #{password})
     </insert>
 
     <select id="getTempPassword" parameterType="long" resultType="string">
         SELECT password
-        FROM "tmpPassword"
-        WHERE "userId" = #{userId}
+        FROM tmp_password
+        WHERE userId = #{userId}
     </select>
 
     <select id="getById" parameterType="long" resultType="md.maxcode.si.domain.User">
         SELECT *
-        FROM "users"
-        WHERE "id" = #{id}
+        FROM users
+        WHERE id = #{id}
         LIMIT 1
     </select>
 
     <select id="getByUsername" parameterType="string" resultType="md.maxcode.si.domain.User">
         SELECT *
-        FROM "users"
-        WHERE "username" = #{username}
+        FROM users
+        WHERE username = #{username}
         LIMIT 1
     </select>
 
     <select id="getByIdentifier" parameterType="string" resultType="md.maxcode.si.domain.User">
         SELECT *
-        FROM "users"
-        WHERE "identifier" = #{identifier}
+        FROM users
+        WHERE identifier = #{identifier}
         LIMIT 1
     </select>
 
     <select id="getIdByUsername" parameterType="string" resultType="long">
-        SELECT "id"
-        FROM "users"
-        WHERE "username" = #{username}
+        SELECT id
+        FROM users
+        WHERE username = #{username}
     </select>
 
 </mapper>

@@ -12,11 +12,11 @@
 
     <insert id="insertFile" parameterType="md.maxcode.si.domain.CertificateFile"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        INSERT INTO "certificateFiles"
+        INSERT INTO certificate_files
 
-        ("fileName",
-        "accessPointId",
-        "userId")
+        (fileName,
+        accessPointId,
+        userId)
 
         VALUES
 
@@ -26,14 +26,14 @@
     </insert>
 
     <delete id="deleteFile">
-        DELETE FROM "certificateFiles"
-        WHERE "id" = #{id}
+        DELETE FROM certificate_files
+        WHERE id = #{id}
     </delete>
 
     <delete id="deleteFiles" parameterType="arraylist">
-        DELETE FROM "certificateFiles"
+        DELETE FROM certificate_files
         <where>
-            "id" IN
+            id IN
             <foreach collection="list" item="id" index="index"
                      open="(" separator="," close=")">
                 #{id}

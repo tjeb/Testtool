@@ -12,17 +12,17 @@
 
     <insert id="insertFile" parameterType="md.maxcode.si.domain.UserFile"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        INSERT INTO "userFiles"
+        INSERT INTO user_files
 
-        ("name",
-        "fileName",
-        "size",
-        "userId",
-        "typeId",
-        "extension",
-        "validated",
-        "receivedMetadataId",
-        "validationInfo")
+        (name,
+        fileName,
+        size,
+        userId,
+        typeId,
+        extension,
+        validated,
+        received_metadataId,
+        validationInfo)
 
         VALUES
 
@@ -33,26 +33,26 @@
         #{typeId},
         #{extension},
         #{validated},
-        #{receivedMetadataId},
+        #{received_metadataId},
         #{validationInfo})
     </insert>
 
     <update id="updateFile" parameterType="md.maxcode.si.domain.UserFile">
-        UPDATE "userFiles"
+        UPDATE user_files
         SET
-        "typeId" = #{typeId}
-        WHERE "id" = #{id}
+        typeId = #{typeId}
+        WHERE id = #{id}
     </update>
 
     <delete id="deleteFile">
-        DELETE FROM "userFiles"
-        WHERE "id" = #{id}
+        DELETE FROM user_files
+        WHERE id = #{id}
     </delete>
 
     <delete id="deleteFiles" parameterType="arraylist">
-        DELETE FROM "userFiles"
+        DELETE FROM user_files
         <where>
-            "id" IN
+            id IN
             <foreach collection="list" item="id" index="index"
                      open="(" separator="," close=")">
                 #{id}
@@ -85,21 +85,21 @@
 
     <select id="getAllWithTheirAttachments" resultMap="FileTypeMap">
         SELECT
-        "fileTypes"."id" as fileType_id ,
-        "fileTypes"."name" as fileType_name,
-        "fileTypes"."addedTime" as fileType_addedTime,
-        "fileTypes"."identifier" as fileType_identifier,
+        file_types.id as fileType_id ,
+        file_types.name as fileType_name,
+        file_types.addedTime as fileType_addedTime,
+        file_types.identifier as fileType_identifier,
 
-        "schemaFiles"."id" as file_id,
-        "schemaFiles"."name" as file_name,
-        "schemaFiles"."addedTime" as file_addedTime,
-        "fileName", "userId", "typeId", "extension", "marked"
-        FROM "fileTypes"
+        schema_files.id as file_id,
+        schema_files.name as file_name,
+        schema_files.addedTime as file_addedTime,
+        fileName, userId, typeId, extension, marked
+        FROM file_types
 
-        LEFT OUTER JOIN "schemaFiles"
-        ON "schemaFiles"."typeId" = "fileTypes"."id"
+        LEFT OUTER JOIN schema_files
+        ON schema_files.typeId = file_types.id
 
-        ORDER BY "fileTypes"."id" ASC
+        ORDER BY file_types.id ASC
     </select>
 
 

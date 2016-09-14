@@ -18,6 +18,6 @@ public interface GalaxyMetadataProfileMapper {
 
     void removeByProfileId(Long profileId);
 
-    @Select("select \"profileId\" from \"galaxyMetadataProfiles\"")
+    @Select("select profileId from galaxy_metadata_profiles")
     List<Integer> getAllProfileIds();
 }

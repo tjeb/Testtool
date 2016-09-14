@@ -13,8 +13,8 @@
     <insert id="insert" parameterType="md.maxcode.si.smp.galaxygateway.GParticipantIdentifierReference"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 
-        INSERT INTO "gParticipantIdRef"
-        ("userId")
+        INSERT INTO g_participant_id_ref
+        (userId)
 
         VALUES
         (#{userId})
@@ -24,35 +24,35 @@
     <update id="update">
 
         UPDATE
-        "gParticipantIdRef"
+        g_participant_id_ref
 
         SET
-        "userId" = #{userId},
-        "endpointId" = #{endpointId},
-        "participantIdValue" = #{participantIdValue}
+        userId = #{userId},
+        endpointId = #{endpointId},
+        participantIdValue = #{participantIdValue}
 
         WHERE
-        "id" = #{id}
+        id = #{id}
 
     </update>
 
     <delete id="remove">
 
         DELETE FROM
-        "gParticipantIdRef"
+        g_participant_id_ref
 
         WHERE
-        "id" = #{id}
+        id = #{id}
 
     </delete>
 
     <delete id="removeByParticipantId">
 
         DELETE FROM
-        "gParticipantIdRef"
+        g_participant_id_ref
 
         WHERE
-        "participantIdValue" = #{participantId}
+        participantIdValue = #{participantId}
 
     </delete>
 

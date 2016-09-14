@@ -14,13 +14,13 @@ public interface AccessPointMapper {
 
     void insert(AccessPoint item);
 
-    @Select("SELECT * FROM \"accessPoints\" WHERE \"userId\" = #{id}")
+    @Select("SELECT * FROM access_points WHERE userId = #{id}")
     List<AccessPoint> getAllByUserId(Long id);
 
-    @Select("SELECT * FROM \"accessPoints\" WHERE \"userId\" = #{id} ORDER BY \"addedTime\" DESC LIMIT 5")
+    @Select("SELECT * FROM access_points WHERE userId = #{id} ORDER BY addedTime DESC LIMIT 5")
     List<AccessPoint> getLatestByUserId(Long id);
 
-    @Select("SELECT * FROM \"accessPoints\" WHERE \"id\" = #{id} AND \"userId\" = #{userId}")
+    @Select("SELECT * FROM access_points WHERE id = #{id} AND userId = #{userId}")
     AccessPoint getById(@Param("id") final Long id, @Param("userId") final Long userId);
 
     void remove(@Param("id") final Long id, @Param("userId") final Long userId);
@@ -29,7 +29,7 @@ public interface AccessPointMapper {
 
     void setUsedForGalaxyGateway(AccessPoint accessPoint_);
 
-    @Select("SELECT * FROM \"accessPoints\" WHERE \"name\" = #{name} AND \"userId\" = #{userId}")
+    @Select("SELECT * FROM access_points WHERE name = #{name} AND userId = #{userId}")
     AccessPoint getByNameAndUserId(@Param(value = "name") String name, @Param(value = "userId") Long userId);
 
 

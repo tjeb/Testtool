@@ -11,20 +11,20 @@
     <cache/>
 
     <insert id="insert" parameterType="md.maxcode.si.smp.galaxygateway.GMetadataProfile">
-        INSERT INTO "galaxyMetadataProfiles"
-        ("profileId", "base64", "fileTypeId")
+        INSERT INTO galaxy_metadata_profiles
+        (profileId, base64, fileTypeId)
         VALUES
         (#{profile.profileId}, #{profile.base64}, #{fileTypeId})
     </insert>
 
     <delete id="removeByFileTypeId">
-        DELETE FROM "galaxyMetadataProfiles"
-        WHERE "fileTypeId" = #{fileTypeId}
+        DELETE FROM galaxy_metadata_profiles
+        WHERE fileTypeId = #{fileTypeId}
     </delete>
 
     <delete id="removeByProfileId">
-        DELETE FROM "galaxyMetadataProfiles"
-        WHERE "profileId" = #{profileId}
+        DELETE FROM galaxy_metadata_profiles
+        WHERE profileId = #{profileId}
     </delete>
 
 </mapper>

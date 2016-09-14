@@ -11,16 +11,16 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 public interface CertificateFilesMapper {
-    @Select("SELECT * FROM \"certificateFiles\" WHERE \"id\" = #{id} AND \"userId\" = #{userId}")
+    @Select("SELECT * FROM certificate_files WHERE id = #{id} AND userId = #{userId}")
     CertificateFile getById(@Param("id") final Long id, @Param("userId") final Long userId);
 
-    @Select("SELECT \"fileName\" FROM \"certificateFiles\" WHERE \"id\" = #{id}")
+    @Select("SELECT fileName FROM certificate_files WHERE id = #{id}")
     String getFileNameById(final Long id);
 
-    @Select("SELECT * FROM \"certificateFiles\" WHERE \"userId\" = #{id} ORDER BY \"addedTime\" DESC")
+    @Select("SELECT * FROM certificate_files WHERE userId = #{id} ORDER BY addedTime DESC")
     List<CertificateFile> getByUserId(final Long id);
 
-    @Select("SELECT * FROM \"certificateFiles\" WHERE \"userId\" = #{id} ORDER BY \"addedTime\" DESC LIMIT 5")
+    @Select("SELECT * FROM certificate_files WHERE userId = #{id} ORDER BY addedTime DESC LIMIT 5")
     List<CertificateFile> getLatestByUserId(final Long id);
 
     void insertFile(final CertificateFile file);

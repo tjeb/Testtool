@@ -12,13 +12,13 @@
 
     <insert id="insertFile" parameterType="md.maxcode.si.domain.SchemaFile"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        INSERT INTO "schemaFiles"
+        INSERT INTO schema_files
 
-        ("fileName",
-        "name",
-        "userId",
-        "typeId",
-        "extension")
+        (fileName,
+        name,
+        userId,
+        typeId,
+        extension)
 
         VALUES
 
@@ -30,26 +30,26 @@
     </insert>
 
     <update id="updateFile" parameterType="md.maxcode.si.domain.SchemaFile">
-        UPDATE "schemaFiles"
+        UPDATE schema_files
         SET
-        "fileName" = #{fileName},
-        "name" = #{name},
-        "userId" = #{userId},
-        "typeId" = #{typeId},
-        "extension" = #{extension},
-        "marked" = #{marked}
-        WHERE "id" = #{id}
+        fileName = #{fileName},
+        name = #{name},
+        userId = #{userId},
+        typeId = #{typeId},
+        extension = #{extension},
+        marked = #{marked}
+        WHERE id = #{id}
     </update>
 
     <delete id="deleteFile">
-        DELETE FROM "schemaFiles"
-        WHERE "id" = #{id}
+        DELETE FROM schema_files
+        WHERE id = #{id}
     </delete>
 
     <delete id="deleteFiles" parameterType="arraylist">
-        DELETE FROM "schemaFiles"
+        DELETE FROM schema_files
         <where>
-            "id" IN
+            id IN
             <foreach collection="list" item="id" index="index"
                      open="(" separator="," close=")">
                 #{id}

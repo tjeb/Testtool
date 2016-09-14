@@ -14,16 +14,16 @@ import java.util.List;
 
 public interface UserMapper {
 
-    @Select("SELECT * FROM \"users\" ORDER BY \"id\" ASC")
+    @Select("SELECT * FROM users ORDER BY id ASC")
     List<User> getAll();
 
-    @Select("SELECT * FROM \"users\" ORDER BY \"id\" ASC")
+    @Select("SELECT * FROM users ORDER BY id ASC")
     List<User> getAllNonEditable();
 
-    @Select("SELECT * FROM \"userRoles\" WHERE \"userId\" = #{id}")
+    @Select("SELECT * FROM user_roles WHERE userId = #{id}")
     List<Role> getRolesById(Long id);
 
-    @Select("SELECT * FROM \"users\" WHERE \"email\" = #{email}")
+    @Select("SELECT * FROM users WHERE email = #{email}")
     User getByEmail(String email);
 
     User getById(Long id);

@@ -11,16 +11,16 @@ import java.util.List;
 
 public interface FileTypesMapper {
 
-    @Select("SELECT * FROM \"fileTypes\"")
+    @Select("SELECT * FROM file_types")
     List<FileType> getAll();
 
-    @Select("SELECT * FROM \"fileTypes\" WHERE \"id\" = #{id}")
+    @Select("SELECT * FROM file_types WHERE id = #{id}")
     FileType getById(Long id);
 
-    @Select("SELECT * FROM \"fileTypes\" WHERE \"identifier\" = #{identifier}")
+    @Select("SELECT * FROM file_types WHERE identifier = #{identifier}")
     FileType getByIdentifier(String identifier);
 
-    @Select("SELECT * FROM \"fileTypes\" WHERE \"name\" = #{name}")
+    @Select("SELECT * FROM file_types WHERE name = #{name}")
     FileType getByName(String name);
 
     List<FileType> getAllWithTheirAttachments();
