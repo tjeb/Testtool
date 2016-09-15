@@ -41,6 +41,7 @@ public class TTSettings {
     public String terminal;
     public String inbound_documents_folder;
     public String oxalis_standalone_jar;
+    public String oxalis_home;
     public String java_bin;
     public String galaxy_prefix;
     public String galaxy_suffix;
