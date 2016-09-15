@@ -236,9 +236,23 @@ public class FileSendingService {
             if (returnCode != 0 || !outMessage.contains("was assigned transmissionId")) {
 
                 StringBuilder string = new StringBuilder("\r\n\r\n");
+                // Check for error messages on stdout
+                Scanner scanner = new Scanner(outMessage);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+
+                    if (line.equals("")) {
+                        continue;
+                    }
+                    if (line.startsWith("Message failed :")) {
+                        string.append(line + "\r\n");
+                    }
+                }
+
+                // Add exceptions from stderr as well
                 int i = 0;
 
-                Scanner scanner = new Scanner(errorMessage);
+                scanner = new Scanner(errorMessage);
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
 
