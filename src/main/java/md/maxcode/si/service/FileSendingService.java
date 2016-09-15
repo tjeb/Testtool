@@ -205,6 +205,11 @@ public class FileSendingService {
 
         Process p;
         try {
+            System.out.println("---------------------------------------------------------------");
+            System.out.println("-------------------------  START  -----------------------------");
+            System.out.println("---------------------------------------------------------------");
+            System.out.println("----------------------Program output:--------------------------");
+
             p = Runtime.getRuntime().exec(new String[]{ttSettings.terminal}, new String[]{"OXALIS_HOME="+ttSettings.oxalis_home});
             SyncPipe errorPipe = new SyncPipe(p.getErrorStream(), System.err);
             SyncPipe outPipe = new SyncPipe(p.getInputStream(), System.out);
@@ -267,17 +272,11 @@ public class FileSendingService {
                 }
                 scanner.close();
 
-
-                System.out.println("---------------------------------------------------------------");
-                System.out.println("Thread count: ");
-                System.out.println(Thread.activeCount());
-                System.out.println("-------------------------  START  -----------------------------");
-                System.out.println("--------------------------stdout-------------------------------");
-                System.out.println(outMessage);
-                System.out.println("--------------------------sdterr-------------------------------");
+                System.out.println("------------------Modified error message:----------------------");
                 System.out.println(errorMessage);
                 System.out.println("---------------------------------------------------------------");
                 System.out.println("---------------------------  END  -----------------------------");
+                System.out.println("Thread count: " + new String(Thread.activeCount());
                 System.out.println("---------------------------------------------------------------");
                 throw new FaultMessage("Error while sending file, details:\r\n" + string, new StartException());
             }
