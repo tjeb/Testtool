@@ -269,8 +269,12 @@ public class FileSendingService {
 
 
                 System.out.println("---------------------------------------------------------------");
+                System.out.println("Thread count: ");
+                System.out.println(Thread.activeCount());
                 System.out.println("-------------------------  START  -----------------------------");
-                System.out.println("---------------------------------------------------------------");
+                System.out.println("--------------------------stdout-------------------------------");
+                System.out.println(outMessage);
+                System.out.println("--------------------------sdterr-------------------------------");
                 System.out.println(errorMessage);
                 System.out.println("---------------------------------------------------------------");
                 System.out.println("---------------------------  END  -----------------------------");
