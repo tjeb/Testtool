@@ -205,7 +205,7 @@ public class FileSendingService {
 
         Process p;
         try {
-            p = Runtime.getRuntime().exec(new String[]{ttSettings.terminal});
+            p = Runtime.getRuntime().exec(new String[]{ttSettings.terminal}, new String[]{"OXALIS_HOME="+ttSettings.oxalis_home});
             SyncPipe errorPipe = new SyncPipe(p.getErrorStream(), System.err);
             SyncPipe outPipe = new SyncPipe(p.getInputStream(), System.out);
             new Thread(errorPipe).start();
