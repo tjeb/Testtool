@@ -97,10 +97,15 @@ public class UserFile implements Serializable {
     }
 
     public Date getAddedTimeAsDate() throws ParseException {
-        String[] split = addedTime.split("\\+");
-        String zone = "+" + split[1];
-        String dateTime = split[0];
-        TimeZone timeZone = TimeZone.getTimeZone("GMT" + zone);
+        // Fix for mysql support; can this not be done directly from the db?
+	String dateTime = addedTime;
+	TimeZone timeZone = null;
+        if (addedTime.indexOf("+") > 0) {
+            String[] split = addedTime.split("\\+");
+            String zone = "+" + split[1];
+            dateTime = split[0];
+            timeZone = TimeZone.getTimeZone("GMT" + zone);
+        }
 
         if (timeZone == null) {
             timeZone = TimeZone.getDefault();

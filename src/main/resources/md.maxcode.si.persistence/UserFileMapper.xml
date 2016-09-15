@@ -21,7 +21,7 @@
         typeId,
         extension,
         validated,
-        received_metadataId,
+        receivedMetadataId,
         validationInfo)
 
         VALUES
@@ -33,7 +33,7 @@
         #{typeId},
         #{extension},
         #{validated},
-        #{received_metadataId},
+        #{receivedMetadataId},
         #{validationInfo})
     </insert>
 

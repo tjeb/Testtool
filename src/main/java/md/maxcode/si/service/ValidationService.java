@@ -144,6 +144,8 @@ Builder builder = new Builder();
         // Oxalis does not remove this, unfortunately, so we'll
         // have to do it ourselves (or shove it up even one layer more...)
         // For some discussion, see https://github.com/difi/oxalis/pull/241
+        System.err.println("[XX] xml path: " + xmlPath_);
+
 
         ReceivedDocument doc = new ReceivedDocument(xmlPath_);
 
