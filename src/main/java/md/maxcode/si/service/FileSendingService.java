@@ -18,6 +18,7 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3._2009._02.ws_tra.FaultMessage;
@@ -205,81 +206,40 @@ public class FileSendingService {
 
         Process p;
         try {
-            System.out.println("---------------------------------------------------------------");
-            System.out.println("-------------------------  START  -----------------------------");
-            System.out.println("---------------------------------------------------------------");
-            System.out.println("----------------------Program output:--------------------------");
-
             p = Runtime.getRuntime().exec(new String[]{ttSettings.terminal}, new String[]{"OXALIS_HOME="+ttSettings.oxalis_home});
-            SyncPipe errorPipe = new SyncPipe(p.getErrorStream(), System.err);
-            SyncPipe outPipe = new SyncPipe(p.getInputStream(), System.out);
-            new Thread(errorPipe).start();
-            new Thread(outPipe).start();
             PrintWriter stdin = new PrintWriter(p.getOutputStream());
-
             stdin.println(sslCommand);
             stdin.close();
-
             int returnCode = p.waitFor();
-            System.out.println("Return code = " + returnCode);
-
-            String errorMessage = errorPipe.getResult().replace("\u0000", "").replace("\t", "\r\n").replace("Caused by:", "\r\nCaused by:");
-            errorMessage = URLDecoder.decode(errorMessage, "UTF-8");
-
-            try {
-                errorMessage = URLDecoder.decode(errorMessage, "UTF-8");
-            } catch (Throwable e) {
-            }
-
-            String outMessage = outPipe.getResult().replace("\u0000", "").replace("\t", "\r\n");
-
-            try {
-                outMessage = URLDecoder.decode(outMessage, "UTF-8");
-            } catch (Throwable e) {
-            }
-
-            if (returnCode != 0 || !outMessage.contains("was assigned transmissionId")) {
-
-                StringBuilder string = new StringBuilder("\r\n\r\n");
-                // Check for error messages on stdout
-                Scanner scanner = new Scanner(outMessage);
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-
-                    if (line.equals("")) {
-                        continue;
-                    }
-                    if (line.startsWith("Message failed :")) {
-                        string.append(line + "\r\n");
+            System.out.println("Return code: " + returnCode);
+            String stdout = IOUtils.toString(p.getInputStream(), "UTF-8");
+            String stderr = IOUtils.toString(p.getErrorStream(), "UTF-8");
+            System.out.println("---------------- Process stdout ----------------------");
+            System.out.println(stdout);
+            System.out.println("---------------- Process stderr ----------------------");
+            System.out.println(stderr);
+            
+            if (returnCode != 0 || !stdout.contains("was assigned transmissionId")) {
+                // make something somewhat readable from the error
+                StringBuilder error = new StringBuilder();
+                for (String line : stdout.split("\n")) {
+                    if (line.startsWith("Message failed")) {
+                        error.append(line);
+                        error.append("\r\n");
                     }
                 }
 
-                // Add exceptions from stderr as well
-                int i = 0;
+                // Just append stderr in its entirety
+                error.append(stderr);
+                System.out.println("------------ Converted error message -----------------");
+                System.out.println(error.toString());
 
-                scanner = new Scanner(errorMessage);
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-
-                    if (line.equals("")) {
-                        continue;
-                    }
-
-                    if (line.startsWith("Caused by:") || line.startsWith("java.lang.RuntimeException:")) {
-                        string.append("  " + (++i) + ".     " + line + "\r\n\r\n------------------------------\r\n\r\n");
-                    }
-
-                }
-                scanner.close();
-
-                System.out.println("------------------Modified error message:----------------------");
-                System.out.println(errorMessage);
-                System.out.println("---------------------------------------------------------------");
-                System.out.println("---------------------------  END  -----------------------------");
-                System.out.println("Thread count: " + new String(Thread.activeCount());
-                System.out.println("---------------------------------------------------------------");
-                throw new FaultMessage("Error while sending file, details:\r\n" + string, new StartException());
+ 
+                System.out.println("---------------- End of process ----------------------");
+                throw new Exception(error.toString());
             }
+
+            System.out.println("---------------- End of process ----------------------");
         } catch (IOException e) {
             logger.severe(e.getMessage());
             e.printStackTrace();
