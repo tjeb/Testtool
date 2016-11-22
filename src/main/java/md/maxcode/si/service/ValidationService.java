@@ -154,7 +154,7 @@ Builder builder = new Builder();
             // Should match one of these
             ActorID customerActorID = getActorIDFromInvoice(doc.getDocument(), "/inv:Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID");
             if (customerActorID == null) {
-                customerActorID = getActorIDFromInvoice(doc.getDocument(), "doc:Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID");
+                customerActorID = getActorIDFromInvoice(doc.getDocument(), "/inv:Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID");
             }
             if (customerActorID != null && !customerActorID.equals(doc.getReceiver())) {
                 final XSLErrorInfo xslError = new XSLErrorInfo();
