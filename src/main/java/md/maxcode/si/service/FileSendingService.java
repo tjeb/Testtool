@@ -276,7 +276,6 @@ public class FileSendingService {
                 System.out.println(errorMessage);
                 System.out.println("---------------------------------------------------------------");
                 System.out.println("---------------------------  END  -----------------------------");
-                System.out.println("Thread count: " + new String(Thread.activeCount());
                 System.out.println("---------------------------------------------------------------");
                 throw new FaultMessage("Error while sending file, details:\r\n" + string, new StartException());
             }
