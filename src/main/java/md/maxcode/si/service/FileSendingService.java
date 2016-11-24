@@ -239,27 +239,38 @@ public class FileSendingService {
             }
 
             if (returnCode != 0 || !outMessage.contains("was assigned transmissionId")) {
-
+                int i = 0;
+                boolean addAll = false;
                 StringBuilder string = new StringBuilder("\r\n\r\n");
                 // Check for error messages on stdout
                 Scanner scanner = new Scanner(outMessage);
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
+                    System.out.println("[XX] SCANNING OUTLINE: " + line);
 
                     if (line.equals("")) {
                         continue;
-                    }
-                    if (line.startsWith("Message failed :")) {
+                    } else if (line.startsWith("Message failed :") || line.contains("ERROR") || addAll) {
+                        string.append(line + "\r\n");
+                        addAll = true;
+                    } else if (line.contains("ERROR ")) {
+                        string.append(line + "\r\n");
+                    } else if (line.contains("Exception:") || line.startsWith("Caused by:") || line.startsWith("java.lang.RuntimeException:")) {
+                        string.append("  " + (++i) + ".     " + line + "\r\n\r\n------------------------------\r\n\r\n");
+                    } else if (addAll) {
                         string.append(line + "\r\n");
                     }
+
                 }
 
                 // Add exceptions from stderr as well
-                int i = 0;
+                i = 0;
+                addAll = false;
 
                 scanner = new Scanner(errorMessage);
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
+                    System.out.println("[XX] SCANNING ERRLINE: " + line);
 
                     if (line.equals("")) {
                         continue;
