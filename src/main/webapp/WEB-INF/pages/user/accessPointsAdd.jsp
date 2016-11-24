@@ -45,7 +45,7 @@
             <div class="col-sm-7">
                 <textarea class="form-control" name="certificate" id="certificate" placeholder="Certificate content"
                          style="height: 200px"></textarea>
-                <div data-parent="description" class="margin-top-10 alert alert-warning input-warning">
+                <div data-parent="certificate" class="margin-top-10 alert alert-warning input-warning">
                 </div>
             </div>
         </div>

@@ -19,6 +19,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+// used to check the certificate
+import java.io.StringReader;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.asn1.x500.X500Name;
+
 @Service
 public class InputValidationService {
 
@@ -169,6 +181,28 @@ public class InputValidationService {
 
         if (certificate == null || certificate.isEmpty()) {
             errors.put("certificate", "The content of the certificate should not be empty");
+        } else {
+            // See if certificate is valid; try to get CN from it
+            try {
+                System.out.println("[XX] 1");
+                CertificateFactory fact = CertificateFactory.getInstance("X.509");
+                X509Certificate x509certificate = (X509Certificate) fact.generateCertificate(new ByteArrayInputStream(certificate.getBytes(StandardCharsets.UTF_8)));
+                X500Name x500name = new JcaX509CertificateHolder(x509certificate).getSubject();
+                System.out.println("[XX] 6");
+                RDN cn = x500name.getRDNs(BCStyle.CN)[0];
+                System.out.println("[XX] 7");
+
+                String x509name = IETFUtils.valueToString(cn.getFirst().getValue());
+                System.out.println("[XX] 8");
+            } catch (RuntimeException exc) {
+                System.out.println("[XX] ERROR1");
+                System.out.println("[XX] Exception: " + exc.toString());
+                errors.put("certificate", "Error reading certificate: " + exc.getMessage());
+            } catch (Exception exc2) {
+                System.out.println("[XX] ERROR2");
+                System.out.println("[XX] Exception: " + exc2.toString());
+                errors.put("certificate", "Error reading certificate: " + exc2.getMessage());
+            }
         }
 
         if (description == null || description.isEmpty()) {
