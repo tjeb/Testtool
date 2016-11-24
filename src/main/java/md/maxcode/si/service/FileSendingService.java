@@ -171,11 +171,8 @@ public class FileSendingService {
         String systemIdentifier = "";
 
         //backwards compatible to old START protocol. Use as default protocol
-        String method = "start";
-        if (isAS2) {
-            method = "as2";
-            systemIdentifier = " -i \"" + ttSettings.AS2SystemIdentifier + "\"";
-        }
+        String method = "as2";
+        systemIdentifier = " -i \"" + ttSettings.AS2SystemIdentifier + "\"";
 
         //start constructing the command line that we use to send information to Oxalis
         String sslCommand = ttSettings.java_bin + " " +
