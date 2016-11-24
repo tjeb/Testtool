@@ -9,6 +9,8 @@ import eu.peppol.identifier.PeppolDocumentTypeId;
 import eu.peppol.util.GlobalConfiguration;
 import md.maxcode.si.domain.ScheduledDocumentSending;
 import md.maxcode.si.domain.UserFile;
+import md.maxcode.si.persistence.CertificateFilesMapper;
+import md.maxcode.si.persistence.UserFileMapper;
 import md.maxcode.si.persistence.AccessPointMapper;
 import md.maxcode.si.tools.SyncPipe;
 import md.maxcode.si.tools.TTSettings;
@@ -35,6 +37,19 @@ import java.security.SignatureException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
+// used to get CN from cert
+import md.maxcode.si.domain.CertificateFile;
+import java.io.StringReader;
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.asn1.x500.X500Name;
+
 @Service
 public class FileSendingService {
     protected final Logger logger = Logger.getLogger(getClass().getName());
@@ -46,6 +61,8 @@ public class FileSendingService {
     private UtilsComponent utilsComponent;
     @Autowired(required = true)
     private AccessPointMapper accessPointMapper;
+    @Autowired(required = true)
+    private CertificateFilesMapper certFileMapper;
 
     public void sendFileToAP(final Long userId, final String base64Input_, final String providedHMACSignature_) throws Exception {
         String json = new String(Base64.decodeBase64(base64Input_));
@@ -76,6 +93,49 @@ public class FileSendingService {
         }
 
         return destinationUrl;
+    }
+
+    private String getAPCertificateFileName(final Long apConfigId, final Long userId) {
+        Long fileId;
+		System.out.println("[XX] apConfigId: " + apConfigId);
+		System.out.println("[XX] userId: " + userId);
+        if (apConfigId < 0) {
+            return null;
+        } else if (apConfigId == 0) {
+            return null;
+        } else {
+            fileId = accessPointMapper.getById(apConfigId, userId).getFileId();
+			System.out.println("[XX] FileId: " + fileId);
+            CertificateFile certFile = certFileMapper.getById(fileId, userId);
+			System.out.println("[XX] userfile object: " + certFile);
+            return utilsComponent.getFullFilePath(ttSettings.storeCertificateFiles, certFile.getFileName());
+        }
+    }
+
+    private String constructAPCommonName(final Long apConfigId, final Long userId) {
+        String commonName;
+		System.out.println("[XX] get CN from cert");
+        String certFileName = getAPCertificateFileName(apConfigId, userId);
+        if (certFileName == null) {
+			System.out.println("[XX] No certificate file");
+            return "null";
+        }
+        try {
+			System.out.println("[XX] cert file: " + certFileName);
+			CertificateFactory fact = CertificateFactory.getInstance("X.509");
+			X509Certificate x509certificate = (X509Certificate) fact.generateCertificate(new FileInputStream(new File(certFileName)));
+			X500Name x500name = new JcaX509CertificateHolder(x509certificate).getSubject();
+			System.out.println("[XX] 6");
+			RDN cn = x500name.getRDNs(BCStyle.CN)[0];
+			System.out.println("[XX] 7");
+
+			String x509name = IETFUtils.valueToString(cn.getFirst().getValue());
+			System.out.println("[XX] x509 CN: " + x509name);
+			return x509name;
+        } catch (Exception exc) {
+            System.out.println("Error reading certificate file " + certFileName + ": " + exc.toString());
+            return "null";
+        }
     }
 
     public String constructDocumentId(final Element rootElement) throws Exception {
@@ -168,11 +228,10 @@ public class FileSendingService {
         String destinationUrl = constructDestinationUrl(apConfigId, userId);
 
         Boolean isAS2 = destinationUrl == null || destinationUrl.contains("as2");
-        String systemIdentifier = "";
+        String systemIdentifier = constructAPCommonName(apConfigId, userId);
 
         //backwards compatible to old START protocol. Use as default protocol
         String method = "as2";
-        systemIdentifier = " -i \"" + ttSettings.AS2SystemIdentifier + "\"";
 
         //start constructing the command line that we use to send information to Oxalis
         String sslCommand = ttSettings.java_bin + " " +
@@ -181,15 +240,15 @@ public class FileSendingService {
         if (xmlIsStandardBusinessDocument) {
             //Add mandatory information required by AS2 protocol
             sslCommand += " -f \"" + filePath + "\"" +
-                    " -m \"" + method + "\"" +
-                    systemIdentifier;
+                    " -m " + method +
+                    " -i " + systemIdentifier;
         } else {
             //Use mandatory parameters for AS2 protocol
             sslCommand = sslCommand +
                     " -d \"" + documentId + "\"" +
                     " -f \"" + filePath + "\"" +
                     " -m \"" + method + "\"" +
-                    systemIdentifier +
+                    " -i \"" + systemIdentifier + "\"" + 
                     " -r \"" + recipientId + "\"" +
                     " -s \"" + senderId + "\"";
         }
